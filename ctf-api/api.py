@@ -1,6 +1,7 @@
 import os
 import random
 import subprocess
+import threading
 import time
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -19,6 +20,7 @@ LAB_EXPIRES_SECONDS = int(os.getenv("LAB_EXPIRES_SECONDS", "7200"))
 LAB_NETWORK_PREFIX = os.getenv("LAB_NETWORK_PREFIX", "10.50.5")
 LAB_TTYD_PORT = int(os.getenv("LAB_TTYD_PORT", "7681"))
 LAB_READY_TIMEOUT = int(os.getenv("LAB_READY_TIMEOUT", "60"))
+LAB_TERMINAL_CHECK_TIMEOUT = int(os.getenv("LAB_TERMINAL_CHECK_TIMEOUT", "8"))
 LAB_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(
@@ -48,6 +50,7 @@ app.add_middleware(
 )
 
 active_labs: dict[str, dict[str, Any]] = {}
+lab_lock = threading.Lock()
 
 
 def utc_now() -> datetime:
@@ -155,7 +158,7 @@ def wait_for_ip(ctid: int) -> str:
 
 
 def wait_for_terminal(ip_address: str) -> None:
-    deadline = time.time() + LAB_READY_TIMEOUT
+    deadline = time.time() + LAB_TERMINAL_CHECK_TIMEOUT
     url = terminal_url(ip_address)
 
     while time.time() < deadline:
@@ -176,7 +179,6 @@ def wait_for_terminal(ip_address: str) -> None:
 def spawn_container(ctid: int) -> str:
     run_remote(f"{PROXMOX_SPAWN_SCRIPT} {ctid}", timeout=90)
     ip_address = wait_for_ip(ctid)
-    wait_for_terminal(ip_address)
     return ip_address
 
 
@@ -192,23 +194,35 @@ def health():
 @app.get("/spawn")
 def spawn_lab(request: Request):
     key = client_key(request)
-    existing_lab = active_labs.get(key)
 
-    if existing_lab and not is_lab_expired(existing_lab):
-        return public_payload(existing_lab | {"status": "existing"})
+    with lab_lock:
+        existing_lab = active_labs.get(key)
 
-    if existing_lab:
-        active_labs.pop(key, None)
+        if existing_lab and not is_lab_expired(existing_lab):
+            return public_payload(existing_lab | {"status": "existing"})
 
-    ctid = choose_available_ctid()
+        if existing_lab:
+            active_labs.pop(key, None)
+
+        ctid = choose_available_ctid()
+        active_labs[key] = lab_payload(ctid, ctid_ip(ctid), "provisioning")
 
     try:
         ip_address = spawn_container(ctid)
     except Exception as error:
+        with lab_lock:
+            active_labs.pop(key, None)
         raise HTTPException(status_code=502, detail=f"Lab provisioning failed: {error}") from error
 
     lab = lab_payload(ctid, ip_address)
-    active_labs[key] = lab
+    try:
+        wait_for_terminal(ip_address)
+    except Exception:
+        lab["status"] = "terminal-starting"
+
+    with lab_lock:
+        active_labs[key] = lab
+
     return public_payload(lab)
 
 
