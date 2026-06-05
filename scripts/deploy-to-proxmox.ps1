@@ -3,6 +3,7 @@ param(
   [string]$RemoteUser = "cce",
   [string]$RemotePath = "/home/cce/cyber-range-ctfd",
   [switch]$InstallLiveTheme,
+  [switch]$InstallApiService,
   [switch]$StartDockerStack
 )
 
@@ -23,7 +24,10 @@ if (Test-Path $PackageDir) {
 New-Item -ItemType Directory -Force -Path $PackageDir | Out-Null
 
 $Items = @(
-  "CTFd",
+  "CTFd-custom",
+  "ctf-api",
+  "proxmox",
+  "deploy",
   "docker",
   "lab-api",
   "scripts",
@@ -65,6 +69,11 @@ ssh $Remote "cd '$RemotePath' && tar -xzf cyber-range-ctfd.tar.gz --strip-compon
 if ($InstallLiveTheme) {
   Write-Host "Installing Labs files into the existing CTFd tree on remote"
   ssh $Remote "cd '$RemotePath' && bash scripts/install-on-ctfd-vm.sh --install-live-theme"
+}
+
+if ($InstallApiService) {
+  Write-Host "Installing FastAPI lab service on remote"
+  ssh $Remote "cd '$RemotePath' && bash scripts/install-on-ctfd-vm.sh --install-api-service"
 }
 
 if ($StartDockerStack) {

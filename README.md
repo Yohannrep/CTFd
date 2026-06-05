@@ -60,15 +60,23 @@ To install the Labs files into the existing CTFd VM at `192.168.10.4`:
 .\scripts\deploy-to-proxmox.ps1 -InstallLiveTheme
 ```
 
+To install the FastAPI `/spawn` backend as a systemd service on the CTFd VM:
+
+```powershell
+.\scripts\deploy-to-proxmox.ps1 -InstallApiService
+```
+
 See `PROXMOX_DEPLOY.md` for the full transfer and install workflow.
 
 ## Where The Labs Code Lives
 
-- `CTFd/themes/core/templates/components/navbar.html`
-- `CTFd/themes/core/templates/components/labs_modal.html`
-- `CTFd/themes/core/static/js/labs.js`
-- `CTFd/themes/core/static/css/labs.css`
+- `CTFd-custom/themes/core/templates/components/navbar.html`
+- `CTFd-custom/themes/core/templates/components/labs_modal.html`
+- `CTFd-custom/themes/core/static/js/labs.js`
+- `CTFd-custom/themes/core/static/css/labs.css`
+- `ctf-api/api.py`
+- `proxmox/spawn.sh`
 - `lab-api/app.py`
 - `docker/ctfd/patch_navbar.py`
 
-Later, replace the local `lab-api` behavior with the real Proxmox-backed `/spawn` implementation or point nginx at your existing FastAPI service.
+Production uses `ctf-api/` for the real Proxmox-backed `/spawn` implementation and `proxmox/spawn.sh` on the Proxmox host. Local Docker uses `lab-api/` as a safe mock so you can test the UI without creating LXCs.

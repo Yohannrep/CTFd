@@ -29,7 +29,7 @@ Override them when needed:
 
 ## Install Into Existing CTFd On The VM
 
-This copies the Labs modal, JS, and CSS into `/home/cce/CTFd`, patches the existing CTFd navbar, and creates a timestamped backup of the original navbar.
+This copies the cleaned Labs navbar, modal, JS, and CSS into `/home/cce/CTFd` and creates a timestamped backup of the original navbar.
 
 ```powershell
 .\scripts\deploy-to-proxmox.ps1 -InstallLiveTheme
@@ -48,6 +48,21 @@ or:
 ```bash
 cd /home/cce/CTFd
 docker compose restart ctfd
+```
+
+## Install The FastAPI Lab Service
+
+This creates `ctf-api/.env` from the example if needed, installs dependencies into `ctf-api/venv`, and enables the `ctf-api` systemd service on the CTFd VM.
+
+```powershell
+.\scripts\deploy-to-proxmox.ps1 -InstallApiService
+```
+
+Check it on the VM:
+
+```bash
+sudo systemctl status ctf-api
+curl http://127.0.0.1:8001/health
 ```
 
 ## Run The Docker Stack On The VM
@@ -77,6 +92,9 @@ That transfers the project, but it does not install the Labs UI into CTFd becaus
 ## What Gets Transferred
 
 - Labs theme files
+- real FastAPI backend in `ctf-api/`
+- Proxmox provisioning script in `proxmox/spawn.sh`
+- production compose/nginx/systemd references in `deploy/`
 - Docker Compose local stack
 - local FastAPI mock `/spawn`
 - nginx proxy config

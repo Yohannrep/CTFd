@@ -39,6 +39,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Proxmox: Install API Service",
+      "type": "shell",
+      "command": ".\\scripts\\deploy-to-proxmox.ps1 -InstallApiService",
+      "problemMatcher": []
+    },
+    {
       "label": "Proxmox: Transfer And Start Docker Stack",
       "type": "shell",
       "command": ".\\scripts\\deploy-to-proxmox.ps1 -StartDockerStack",

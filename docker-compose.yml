@@ -26,9 +26,9 @@ services:
     volumes:
       - ctfd_uploads:/var/uploads
       - ctfd_logs:/var/log/CTFd
-      - ./CTFd/themes/core/templates/components/labs_modal.html:/opt/CTFd/CTFd/themes/core/templates/components/labs_modal.html:ro
-      - ./CTFd/themes/core/static/js/labs.js:/opt/CTFd/CTFd/themes/core/static/js/labs.js:ro
-      - ./CTFd/themes/core/static/css/labs.css:/opt/CTFd/CTFd/themes/core/static/css/labs.css:ro
+      - ./CTFd-custom/themes/core/templates/components/labs_modal.html:/opt/CTFd/CTFd/themes/core/templates/components/labs_modal.html:ro
+      - ./CTFd-custom/themes/core/static/js/labs.js:/opt/CTFd/CTFd/themes/core/static/js/labs.js:ro
+      - ./CTFd-custom/themes/core/static/css/labs.css:/opt/CTFd/CTFd/themes/core/static/css/labs.css:ro
 
   lab-api:
     build:
