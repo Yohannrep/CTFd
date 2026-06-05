@@ -3,6 +3,77 @@
   href="/themes/core/static/css/labs.css"
 >
 
+<style id="labs-critical-css">
+  .labs-backdrop[hidden],
+  .labs-modal[hidden] {
+    display: none !important;
+  }
+
+  .labs-backdrop {
+    background: rgba(9, 14, 24, 0.42);
+    inset: 0;
+    position: fixed;
+    z-index: 1040;
+  }
+
+  .labs-modal {
+    background: #ffffff;
+    border: 1px solid rgba(17, 24, 39, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 24px 60px rgba(9, 14, 24, 0.28);
+    color: #172033;
+    display: flex;
+    flex-direction: column;
+    height: min(720px, calc(100vh - 32px));
+    left: max(16px, calc((100vw - min(1040px, calc(100vw - 32px))) / 2));
+    min-height: 420px;
+    min-width: 420px;
+    overflow: hidden;
+    position: fixed;
+    resize: both;
+    top: 16px;
+    width: min(1040px, calc(100vw - 32px));
+    z-index: 1050;
+  }
+
+  .labs-modal-header {
+    align-items: center;
+    background: #f7f9fc;
+    border-bottom: 1px solid rgba(17, 24, 39, 0.1);
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: space-between;
+    padding: 0.9rem 1rem;
+  }
+
+  .labs-modal-body {
+    background: #eef2f7;
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0.75rem;
+  }
+
+  .labs-terminal-shell {
+    background: #0b1020;
+    border-radius: 8px;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .labs-terminal-frame {
+    border: 0;
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+  }
+</style>
+
 <div
   id="labs-modal-backdrop"
   class="labs-backdrop"
