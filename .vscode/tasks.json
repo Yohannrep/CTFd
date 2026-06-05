@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CTFd: Docker Compose Up",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "CTFd: Docker Compose Down",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": []
+    },
+    {
+      "label": "CTFd: Docker Compose Logs",
+      "type": "shell",
+      "command": "docker compose logs -f",
+      "problemMatcher": []
+    },
+    {
+      "label": "CTFd: Reset Local Data",
+      "type": "shell",
+      "command": "docker compose down -v",
+      "problemMatcher": []
+    },
+    {
+      "label": "Proxmox: Transfer Project",
+      "type": "shell",
+      "command": ".\\scripts\\deploy-to-proxmox.ps1",
+      "problemMatcher": []
+    },
+    {
+      "label": "Proxmox: Install Labs Into CTFd VM",
+      "type": "shell",
+      "command": ".\\scripts\\deploy-to-proxmox.ps1 -InstallLiveTheme",
+      "problemMatcher": []
+    },
+    {
+      "label": "Proxmox: Transfer And Start Docker Stack",
+      "type": "shell",
+      "command": ".\\scripts\\deploy-to-proxmox.ps1 -StartDockerStack",
+      "problemMatcher": []
+    }
+  ]
+}

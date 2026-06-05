@@ -1,0 +1,90 @@
+<link
+  rel="stylesheet"
+  href="{{ url_for('views.themes', path='css/labs.css') }}"
+>
+
+<div
+  id="labs-modal-backdrop"
+  class="labs-backdrop"
+  data-labs-close
+  hidden
+></div>
+
+<section
+  id="labs-modal"
+  class="labs-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="labs-modal-title"
+  hidden
+>
+  <header class="labs-modal-header" data-labs-drag-handle>
+    <div class="labs-title-group">
+      <span class="labs-status-dot" aria-hidden="true"></span>
+      <div>
+        <h2 id="labs-modal-title" class="labs-title">Labs</h2>
+        <p id="labs-modal-subtitle" class="labs-subtitle">Temporary Linux workspace</p>
+      </div>
+    </div>
+
+    <div class="labs-header-actions">
+      <button
+        id="labs-launch-button"
+        class="btn btn-primary btn-sm labs-launch-button"
+        type="button"
+      >
+        Launch Lab
+      </button>
+      <button
+        id="labs-close-button"
+        class="btn btn-outline-secondary btn-sm labs-icon-button"
+        type="button"
+        aria-label="Close Labs"
+        data-labs-close
+      >
+        &times;
+      </button>
+    </div>
+  </header>
+
+  <div class="labs-modal-body">
+    <div id="labs-empty-state" class="labs-empty-state">
+      <div class="labs-empty-icon" aria-hidden="true">&gt;_</div>
+      <h3>Linux lab ready on demand</h3>
+      <p>Launch a temporary terminal workspace. The terminal will appear here automatically.</p>
+    </div>
+
+    <div id="labs-loading-state" class="labs-loading-state" hidden>
+      <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+      <div>
+        <h3>Provisioning lab</h3>
+        <p>Cloning the template, starting networking, and preparing ttyd.</p>
+      </div>
+    </div>
+
+    <div id="labs-error-state" class="labs-error-state alert alert-danger" role="alert" hidden></div>
+
+    <div id="labs-terminal-shell" class="labs-terminal-shell" hidden>
+      <div class="labs-terminal-toolbar">
+        <div class="labs-terminal-meta">
+          <span id="labs-terminal-host">Terminal</span>
+          <span id="labs-terminal-expiry" class="labs-terminal-expiry"></span>
+        </div>
+        <span id="labs-terminal-status" class="badge badge-success">Connected</span>
+      </div>
+      <iframe
+        id="labs-terminal-frame"
+        class="labs-terminal-frame"
+        title="Embedded Linux lab terminal"
+        allow="clipboard-read; clipboard-write"
+      ></iframe>
+    </div>
+  </div>
+
+  <span class="labs-resize-handle" aria-hidden="true"></span>
+</section>
+
+<script
+  defer
+  src="{{ url_for('views.themes', path='js/labs.js') }}"
+></script>

@@ -1,0 +1,68 @@
+services:
+  proxy:
+    image: nginx:1.27-alpine
+    depends_on:
+      - ctfd
+      - lab-api
+    ports:
+      - "8000:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  ctfd:
+    build:
+      context: .
+      dockerfile: docker/ctfd/Dockerfile
+    depends_on:
+      - db
+      - cache
+    environment:
+      DATABASE_URL: mysql+pymysql://ctfd:ctfd@db/ctfd
+      REDIS_URL: redis://cache:6379
+      SECRET_KEY: dev-change-me
+      UPLOAD_FOLDER: /var/uploads
+      LOG_FOLDER: /var/log/CTFd
+      REVERSE_PROXY: "true"
+    volumes:
+      - ctfd_uploads:/var/uploads
+      - ctfd_logs:/var/log/CTFd
+      - ./CTFd/themes/core/templates/components/labs_modal.html:/opt/CTFd/CTFd/themes/core/templates/components/labs_modal.html:ro
+      - ./CTFd/themes/core/static/js/labs.js:/opt/CTFd/CTFd/themes/core/static/js/labs.js:ro
+      - ./CTFd/themes/core/static/css/labs.css:/opt/CTFd/CTFd/themes/core/static/css/labs.css:ro
+
+  lab-api:
+    build:
+      context: ./lab-api
+    environment:
+      LAB_TERMINAL_URL: http://localhost:7681
+      LAB_EXPIRES_IN: 2 hours
+    ports:
+      - "8080:8080"
+
+  terminal:
+    image: tsl0922/ttyd:alpine
+    command: ["-W", "-p", "7681", "sh"]
+    ports:
+      - "7681:7681"
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: ctfd
+      MYSQL_DATABASE: ctfd
+      MYSQL_USER: ctfd
+      MYSQL_PASSWORD: ctfd
+    volumes:
+      - db_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  cache:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+
+volumes:
+  ctfd_uploads:
+  ctfd_logs:
+  db_data:
+  redis_data:
