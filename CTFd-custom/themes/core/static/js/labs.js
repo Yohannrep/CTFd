@@ -302,5 +302,6 @@
   ready(function () {
     bindEvents();
     showIdle();
+    window.CyberLabsReady = true;
   });
 })();

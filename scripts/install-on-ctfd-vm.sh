@@ -91,8 +91,12 @@ install_live_theme() {
     "${CTFD_THEME_ROOT}/templates/components/labs_modal.html"
   cp "${PROJECT_ROOT}/CTFd-custom/themes/core/static/js/labs.js" \
     "${CTFD_THEME_ROOT}/static/js/labs.js"
+  cp "${PROJECT_ROOT}/CTFd-custom/themes/core/static/js/labs.js" \
+    "${CTFD_THEME_ROOT}/static/js/labs.min.js"
   cp "${PROJECT_ROOT}/CTFd-custom/themes/core/static/css/labs.css" \
     "${CTFD_THEME_ROOT}/static/css/labs.css"
+  cp "${PROJECT_ROOT}/CTFd-custom/themes/core/static/css/labs.css" \
+    "${CTFD_THEME_ROOT}/static/css/labs.min.css"
 
   echo "Backup directory: $backup_dir"
   echo "Labs theme install complete."

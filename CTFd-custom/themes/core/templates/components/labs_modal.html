@@ -1,6 +1,6 @@
 <link
   rel="stylesheet"
-  href="{{ url_for('views.themes', path='css/labs.css') }}"
+  href="/themes/core/static/css/labs.css"
 >
 
 <div
@@ -86,5 +86,158 @@
 
 <script
   defer
-  src="{{ url_for('views.themes', path='js/labs.js') }}"
+  src="/themes/core/static/js/labs.js"
 ></script>
+
+<script>
+(function () {
+  "use strict";
+
+  function find(selector) {
+    return document.querySelector(selector);
+  }
+
+  function setHidden(selector, hidden) {
+    var element = find(selector);
+    if (element) {
+      element.hidden = hidden;
+    }
+  }
+
+  function openLabs(event) {
+    if (event && event.preventDefault) {
+      event.preventDefault();
+    }
+    setHidden("#labs-modal-backdrop", false);
+    setHidden("#labs-modal", false);
+    document.body.classList.add("labs-modal-open");
+  }
+
+  function closeLabs(event) {
+    if (event && event.preventDefault) {
+      event.preventDefault();
+    }
+    setHidden("#labs-modal-backdrop", true);
+    setHidden("#labs-modal", true);
+    document.body.classList.remove("labs-modal-open");
+  }
+
+  function show(selector) {
+    setHidden(selector, false);
+  }
+
+  function hide(selector) {
+    setHidden(selector, true);
+  }
+
+  function text(selector, value) {
+    var element = find(selector);
+    if (element) {
+      element.textContent = value || "";
+    }
+  }
+
+  function showTerminal(lab) {
+    hide("#labs-empty-state");
+    hide("#labs-loading-state");
+    hide("#labs-error-state");
+    show("#labs-terminal-shell");
+    text("#labs-modal-subtitle", "Lab " + (lab.ctid || "") + " is ready");
+    text("#labs-terminal-host", lab.ip_address ? lab.ip_address + ":7681" : "Terminal");
+    text("#labs-terminal-expiry", lab.expires_in ? "Expires in " + lab.expires_in : "");
+
+    var frame = find("#labs-terminal-frame");
+    if (frame && lab.terminal_url) {
+      frame.src = lab.terminal_url;
+    }
+
+    var button = find("#labs-launch-button");
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Reconnect";
+    }
+  }
+
+  function showError(message) {
+    hide("#labs-empty-state");
+    hide("#labs-loading-state");
+    hide("#labs-terminal-shell");
+    show("#labs-error-state");
+    text("#labs-error-state", message || "Unable to launch lab. Please try again.");
+    text("#labs-modal-subtitle", "Unable to launch lab");
+
+    var button = find("#labs-launch-button");
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Try Again";
+    }
+  }
+
+  function launchLab(event) {
+    if (event && event.preventDefault) {
+      event.preventDefault();
+    }
+
+    var button = find("#labs-launch-button");
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Launching...";
+    }
+
+    hide("#labs-empty-state");
+    hide("#labs-error-state");
+    hide("#labs-terminal-shell");
+    show("#labs-loading-state");
+    text("#labs-modal-subtitle", "Provisioning lab environment");
+
+    fetch("/spawn", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: { Accept: "application/json" }
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("The lab service returned HTTP " + response.status + ".");
+        }
+        return response.json();
+      })
+      .then(function (lab) {
+        if (!lab || !lab.terminal_url) {
+          throw new Error("The lab service did not return a terminal URL.");
+        }
+        showTerminal(lab);
+      })
+      .catch(function (error) {
+        showError(error.message || String(error));
+      });
+  }
+
+  window.CyberLabsFallbackOpen = openLabs;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      if (window.CyberLabsReady) {
+        return;
+      }
+
+      var openButton = find("#labs-open-button");
+      var launchButton = find("#labs-launch-button");
+
+      if (openButton) {
+        openButton.addEventListener("click", openLabs);
+      }
+      if (launchButton) {
+        launchButton.addEventListener("click", launchLab);
+      }
+      document.querySelectorAll("[data-labs-close]").forEach(function (button) {
+        button.addEventListener("click", closeLabs);
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeLabs(event);
+        }
+      });
+    }, 250);
+  });
+})();
+</script>
