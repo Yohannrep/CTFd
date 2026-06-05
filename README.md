@@ -66,6 +66,17 @@ To install the FastAPI `/spawn` backend as a systemd service on the CTFd VM:
 .\scripts\deploy-to-proxmox.ps1 -InstallApiService
 ```
 
+## Clean Rebuild On CTFd VM
+
+On a disposable clone VM, this removes the old `/home/cce/CTFd` checkout/data and starts a clean stack from this repository:
+
+```bash
+cd /home/cce/cyber-range
+bash scripts/reset-ctfd-vm.sh --yes-destroy-clone
+```
+
+After the rebuild, open <http://192.168.10.4> and complete the CTFd setup wizard.
+
 See `PROXMOX_DEPLOY.md` for the full transfer and install workflow.
 
 ## Where The Labs Code Lives

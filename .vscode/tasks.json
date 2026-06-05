@@ -49,6 +49,12 @@
       "type": "shell",
       "command": ".\\scripts\\deploy-to-proxmox.ps1 -StartDockerStack",
       "problemMatcher": []
+    },
+    {
+      "label": "CTFd VM: Clean Rebuild",
+      "type": "shell",
+      "command": "bash scripts/reset-ctfd-vm.sh --yes-destroy-clone",
+      "problemMatcher": []
     }
   ]
 }

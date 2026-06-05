@@ -1,6 +1,8 @@
 services:
   ctfd:
-    build: /home/cce/CTFd
+    build:
+      context: ../..
+      dockerfile: docker/ctfd/Dockerfile
     user: root
     restart: always
     environment:
@@ -13,9 +15,8 @@ services:
       - ERROR_LOG=-
       - REVERSE_PROXY=true
     volumes:
-      - /home/cce/CTFd/.data/CTFd/logs:/var/log/CTFd
-      - /home/cce/CTFd/.data/CTFd/uploads:/var/uploads
-      - /home/cce/CTFd:/opt/CTFd:ro
+      - ctfd_logs:/var/log/CTFd
+      - ctfd_uploads:/var/uploads
     depends_on:
       - db
       - cache
@@ -58,7 +59,7 @@ services:
       - MARIADB_DATABASE=ctfd
       - MARIADB_AUTO_UPGRADE=1
     volumes:
-      - /home/cce/CTFd/.data/mysql:/var/lib/mysql
+      - db_data:/var/lib/mysql
     networks:
       internal:
     command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
@@ -67,7 +68,7 @@ services:
     image: redis:4
     restart: always
     volumes:
-      - /home/cce/CTFd/.data/redis:/data
+      - redis_data:/data
     networks:
       internal:
 
@@ -75,3 +76,9 @@ networks:
   default:
   internal:
     internal: true
+
+volumes:
+  ctfd_logs:
+  ctfd_uploads:
+  db_data:
+  redis_data:

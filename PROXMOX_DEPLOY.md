@@ -79,6 +79,21 @@ Then open:
 http://192.168.10.4:8000
 ```
 
+## Destructive Clean Rebuild
+
+Use this only on a disposable clone VM. It deletes the old `/home/cce/CTFd` checkout and data, removes old containers/volumes for the app, and starts a clean CTFd + FastAPI + nginx stack from the Git repo.
+
+```bash
+cd /home/cce/cyber-range
+bash scripts/reset-ctfd-vm.sh --yes-destroy-clone
+```
+
+The clean stack listens on:
+
+```text
+http://192.168.10.4
+```
+
 ## Transfer To The Proxmox Host Instead
 
 Only do this if you intentionally want the files on the Proxmox host:
